@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geri Bildirim</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Geri Bildirim</h1>
+
+    <p>Sitede düzeltilmesini veya eklenmesini istediğin şeyleri buraya yaz.</p>
+
+    <label>Düzeltilmesini istediğin şey</label>
+
+    <textarea 
+        id="correction"
+        placeholder="Örneğin: Menüdeki buton çalışmıyor..."
+    ></textarea>
+
+
+    <label>Eklenmesini istediğin şey</label>
+
+    <textarea 
+        id="addition"
+        placeholder="Örneğin: Karanlık mod eklenebilir..."
+    ></textarea>
+
+
+    <button onclick="sendFeedback()">Gönder</button>
+
+    <p id="message"></p>
+
+</div>
+
+
+<script type="module">
+
+import { createClient } 
+from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+const SUPABASE_URL = "https://lihnkpmkwyqacusugruf.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_AxBHcSnAxQYHcsgbyM1aDg_VmbFMf9o";
+
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+window.sendFeedback = async function () {
+
+    const correction =
+        document.getElementById("correction").value.trim();
+
+    const addition =
+        document.getElementById("addition").value.trim();
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!correction && !addition) {
+
+        message.textContent =
+            "En az bir alanı doldur.";
+
+        return;
+    }
+
+
+    const { error } = await supabase
+        .from("feedback")
+        .insert([
+            {
+                correction: correction,
+                addition: addition
+            }
+        ]);
+
+
+    if (error) {
+
+        console.error(error);
+
+        message.textContent =
+            "Bir hata oluştu.";
+
+        return;
+    }
+
+
+    message.textContent =
+        "Geri bildirimin gönderildi!";
+
+
+    document.getElementById("correction").value = "";
+
+    document.getElementById("addition").value = "";
+
+};
+
+</script>
+
+</body>
+</html>
