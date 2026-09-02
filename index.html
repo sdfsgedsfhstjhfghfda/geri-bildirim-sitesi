@@ -1,113 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geri Bildirim</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Web2Exe Studio — Windows .EXE Dönüştürücü</title>
+  <link rel="stylesheet" href="style.css?v=2">
+  <style>
+    /* Local overrides for page layout */
+    .container { max-width:1100px; margin:48px auto; background:rgba(255,255,255,0.03); padding:28px; border-radius:14px; }
+    h1{font-size:32px; background:linear-gradient(90deg,#6366f1,#8b5cf6); -webkit-background-clip:text; color:transparent}
+    h2{color:#cfe1ff}
+    p, li{color:#d6e9ff}
+    .download { margin:18px 0; }
+    .btn{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,#06b6d4,#3b82f6);color:#001;font-weight:700;text-decoration:none}
+    .note{margin-top:12px;padding:14px;border-radius:8px;background:rgba(6,32,43,0.6);border-left:4px solid #06b6d4;color:#bdeaf7}
+    pre { background:#041122;color:#cbe9ff;padding:12px;border-radius:8px;overflow:auto }
+    .section{margin-top:20px}
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>Web2Exe Studio</h1>
+    <p>Web2Exe Studio, statik web projelerini (HTML/CSS/JS), web klasörlerini veya ZIP arşivlerini tek tuşla taşınabilir Windows uygulamalarına (.exe) dönüştüren bir yerel stüdyo uygulamasıdır. Bu sayfada programın nasıl çalıştığı, hangi dosyaları desteklediği, sınırlamalar, güvenlik önerileri ve indirme bağlantısı eksiksiz olarak yer almaktadır.</p>
 
-<div class="container">
+    <div class="section">
+      <h2>Nasıl çalışır (kullanıcı akışı)</h2>
+      <ol>
+        <li>Web2Exe Studio uygulamasını çalıştırın (indirilen klasörü açın).</li>
+        <li>Uygulama penceresine <strong>HTML</strong>, <strong>web proje klasörü</strong> veya <strong>.zip</strong> arşivini sürükleyip bırakın veya "Dosya/Klasör Seç" butonunu kullanın.</li>
+        <li>Program iç analiz motoru dosyaları tarar, ana giriş sayfasını (index.html) ve varlıkları tespit eder.</li>
+        <li>Özelleştirme seçeneklerinden uygulama adı, pencere boyutu, menü gizleme ve çıktı klasörünü seçin.</li>
+        <li>"WINDOWS UYGULAMASINA DÖNÜŞTÜR (.EXE)" butonuna basın; canlı derleme konsolunda ilerleme görünür.</li>
+        <li>Derleme tamamlandığında tek dosya (portable .exe) seçtiğiniz çıktı klasörüne kopyalanır.</li>
+      </ol>
+    </div>
 
-    <h1>Geri Bildirim</h1>
+    <div class="section">
+      <h2>Detaylı teknik akış</h2>
+      <ul>
+        <li><strong>Doğrulama:</strong> Seçilen öğe ZIP / dosya / klasör olarak analiz edilir. HTML sayfası veya index.html aranır.</li>
+        <li><strong>İçerik hazırlığı:</strong> Geçici çalışma dizini oluşturulur; kaynaklar oraya kopyalanır (node_modules ve .git gibi büyük/donanım klasörleri opsiyonel olarak hariç bırakılabilir).</li>
+        <li><strong>Self-healing:</strong> Eksik <code>main.js</code> veya <code>package.json</code> varsa otomatik üretilir (pencere ayarları, entry HTML ayarlanır).</li>
+        <li><strong>Build:</strong> Derleme, Electron Builder aracılığıyla ayrı bir Node alt sürecinde çalıştırılır; hedef: Windows portable (.exe).</li>
+        <li><strong>Çıktı:</strong> Üretilen .exe çıktı klasörüne kopyalanır ve kullanıcıya açma/kopyalama seçenekleri sunulur.</li>
+      </ul>
+    </div>
 
-    <p>Sitede düzeltilmesini veya eklenmesini istediğin şeyleri buraya yaz.</p>
+    <div class="section">
+      <h2>Hangi dosyalar desteklenir?</h2>
+      <p>Program statik web içeriğini paketler. Doğrudan desteklenenler:</p>
+      <ul>
+        <li><strong>.html / .htm</strong> — tek sayfa veya ana sayfa</li>
+        <li>Web proje klasörleri (index.html, CSS, JS, resimler)</li>
+        <li><strong>.zip</strong> — içinde HTML/varlıklar barındıran ZIP arşivleri (otomatik açılır)</li>
+      </ul>
+      <p>Desteklenmeyen veya sınırlı destek:</p>
+      <ul>
+        <li><strong>Sunucu taraflı / dinamik backend</strong> (PHP, Node server, veritabanı) — bu tür fonksiyonlar paketlenen uygulamada çalışmaz; önce statik bir kopya oluşturulmalı veya uygulama remote API'lere bağlanacak şekilde ayarlanmalıdır.</li>
+        <li>Büyük multimedya (video/stream) — paket boyutuna dikkat edin.</li>
+        <li>Çalıştırılabilir binary'ler (.exe, .dll) ZIP içinde bulunursa üretim sırasında engellenebilir veya antivirüs uyarısına neden olabilir.</li>
+      </ul>
+    </div>
 
-    <label>Düzeltilmesini istediğin şey</label>
+    <div class="section">
+      <h2>Güvenlik & izinler</h2>
+      <ul>
+        <li>Başkalarının sitelerini paketlemeden önce yasal izin alın. Telif hakkı ve kullanım koşullarına dikkat edin.</li>
+        <li>ZIP içeriklerini paketlemeden önce kontrol edin — yürütülebilir dosyalar (exe, bat, ps1) içermemelidir.</li>
+        <li>Derleme makinesinde Node.js ve gerekli araçlar kurulu olmalıdır; son kullanıcıların exe çalıştırması için Node gerekmez.</li>
+        <li>Yüklediğiniz .exe unsigned ise Windows SmartScreen veya antivirüs uyarıları çıkabilir; büyük ölçekte dağıtım için kod imzalama önerilir.</li>
+      </ul>
+    </div>
 
-    <textarea 
-        id="correction"
-        placeholder="Örneğin: Menüdeki buton çalışmıyor..."
-    ></textarea>
+    <div class="section">
+      <h2>Nasıl kullanılır? (adım adım - kullanıcı)</h2>
+      <ol>
+        <li>Butona tıklayıp ZIP paketini indirin veya tüm klasör içeriğini indirin.</li>
+        <li>İndirdiğiniz arşivi sağ tıklayıp "Tümünü ayıkla" veya benzeri ile açın.
+          <div class="note">ÖNEMLİ: Eğer klasör içinde <code>node_modules</code> yoksa, bazı sistemlerde npm paketleri eksik olabilir. Ancak bu paket, çalıştırılabilir uygulama oluşturmak için geliştiricinin ortamında Node bağımlılıkları gerektirir. Son kullanıcı sadece hazır .exe'yi kullanır.</div>
+        </li>
+        <li>Çalıştırmak için klasörü açın, <code>start.bat</code> dosyasına çift tıklayın. Açılan CMD penceresinde derleme/başlatma logları görünür. Program açıldıktan sonra CMD penceresini <strong>kapatmayın</strong> — programın çalışması için gereklidir.</li>
+      </ol>
+    </div>
 
+    <div class="section download">
+      <strong>Programı indirin:</strong>
+      <div style="margin-top:12px">
+        <a class="btn" href="https://github.com/sdfsgedsfhstjhfghfda/geri-bildirim-sitesi/releases/download/v1.0-web2exe-studio/Web-to-EXE-Studio-full.zip">Download for Windows</a>
+      </div>
+      <div class="note">Alternatif: repoda <code>web2exe-site</code> klasöründeki dosyaları direkt inderek testi yapabilirsiniz. ZIP içinde tam kaynak ve bağımlılıklar (node_modules dahil) paketlenmiştir.</div>
+    </div>
 
-    <label>Eklenmesini istediğin şey</label>
+    <div class="section">
+      <h2>Hata alırsanız / sık karşılaşılan sorunlar</h2>
+      <ul>
+        <li><strong>Derleme başarısız:</strong> Bilgisayarda Node.js ve yeterli disk alanı olduğundan emin olun.</li>
+        <li><strong>SmartScreen uyarısı:</strong> .exe unsigned olduğu için Windows uyarabilir — onaylayın veya imzalanmış bir sürüm isteyin.</li>
+        <li><strong>Eksik dosyalar:</strong> ZIP'i açın ve <code>index.html</code> varlık yollarının doğru olduğundan emin olun.</li>
+      </ul>
+    </div>
 
-    <textarea 
-        id="addition"
-        placeholder="Örneğin: Karanlık mod eklenebilir..."
-    ></textarea>
+    <div class="section">
+      <h2>Geliştiriciler için not</h2>
+      <p>Eğer siz build yapan geliştiriciyseniz, EXE üretmek için şu gereksinimler gerekir:</p>
+      <ul>
+        <li>Windows ortamı (veya CI runner Windows hedefi)</li>
+        <li>Node.js (LTS önerilir)</li>
+        <li>npm install (electron, electron-builder, adm-zip, fs-extra vb.)</li>
+        <li>Derleme için yeterli disk alanı ve internet bağlantısı</li>
+      </ul>
+      <pre>Örnek adımlar:
+git clone <repo>
+cd repo
+npm install
+npm run build (veya start.bat ile çalıştır ve UI üzerinden paketle)</pre>
+    </div>
 
+    <div class="section" style="margin-top:28px">
+      <p style="color:#9fc9ff;font-weight:700">Test etmeden önce: lütfen ZIP'i indirip yerel olarak açın ve <code>start.bat</code> ile başlatmayı deneyin. Herhangi bir sorun çıkarsa bana bildir.</p>
+    </div>
 
-    <button onclick="sendFeedback()">Gönder</button>
-
-    <p id="message"></p>
-
-</div>
-
-
-<script type="module">
-
-import { createClient } 
-from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-
-
-const SUPABASE_URL = "https://lihnkpmkwyqacusugruf.supabase.co";
-
-const SUPABASE_KEY = "sb_publishable_AxBHcSnAxQYHcsgbyM1aDg_VmbFMf9o";
-
-
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-window.sendFeedback = async function () {
-
-    const correction =
-        document.getElementById("correction").value.trim();
-
-    const addition =
-        document.getElementById("addition").value.trim();
-
-    const message =
-        document.getElementById("message");
-
-
-    if (!correction && !addition) {
-
-        message.textContent =
-            "En az bir alanı doldur.";
-
-        return;
-    }
-
-
-    const { error } = await supabase
-        .from("feedback")
-        .insert([
-            {
-                correction: correction,
-                addition: addition
-            }
-        ]);
-
-
-    if (error) {
-
-        console.error(error);
-
-        message.textContent =
-            "Bir hata oluştu.";
-
-        return;
-    }
-
-
-    message.textContent =
-        "Geri bildirimin gönderildi!";
-
-
-    document.getElementById("correction").value = "";
-
-    document.getElementById("addition").value = "";
-
-};
-
-</script>
-
+  </div>
 </body>
 </html>
